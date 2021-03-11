@@ -5,7 +5,7 @@ import cookieParser from 'cookie-parser'
 
 async function startServer () : Promise<void> {
   const app: Application = express()
-  await mongoose.connect(process.env.MONGO_URI!, { useCreateIndex: true, useNewUrlParser: true, useUnifiedTopology: true })
+  await mongoose.connect(process.env.MONGO_URI! + '/polls-app', { useCreateIndex: true, useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
       console.log('🌿mongodb \x1b[32mconnected\n')
     })
