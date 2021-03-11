@@ -69,4 +69,13 @@ router.post('/login', async (req: Request, res: Response) => {
   }
 })
 
+router.post('/logout', (req: Request, res: Response) => {
+  try {
+    res.cookie('pollAppAuth', null, { maxAge: 1 })
+    return res.status(400).json({ message: 'succesfuly logged out' })
+  } catch (e) {
+    res.status(400).json({ message: e })
+  }
+})
+
 export default router
