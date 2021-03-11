@@ -2,6 +2,7 @@ import express, { Application } from 'express'
 import mongoose from 'mongoose'
 import router from './router'
 import cookieParser from 'cookie-parser'
+import cors from 'cors'
 
 async function startServer () : Promise<void> {
   const app: Application = express()
@@ -10,6 +11,7 @@ async function startServer () : Promise<void> {
       console.log('🌿mongodb \x1b[32mconnected\n')
     })
 
+  app.use(cors())
   app.use(express.json())
   app.use(express.urlencoded({ extended: false }))
   app.use(cookieParser(process.env.COOKIE_SECRET!))
