@@ -25,7 +25,7 @@ router.post('/signup', async (req: Request, res: Response) => {
           // if user doesnt exist then we make a new user object
           await new User({ username, password, ageGroup, region }).save()
             .then((data) => {
-              const wToken = jwt.sign({ userId: data._id }, process.env.JWT_SECRET!, { expiresIn: '72h' })
+              const wToken = jwt.sign({ userId: data._id }, process.env.JWT_SECRET!, { expiresIn: '3d' })
               res.cookie('pollAppAuth', wToken, { maxAge: 3 * 86400000 })
               return res.status(200).json({ message: 'user sucessfully registered' })
             })
@@ -56,9 +56,13 @@ router.post('/login', async (req: Request, res: Response) => {
         if (user) {
           bcrypt.compare(password, user.password, (err : any, same : Boolean) => {
             if (err) return res.json({ message: err })
-            const wToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET!, { expiresIn: '72h' })
-            res.cookie('pollAppAuth', wToken, { maxAge: 3 * 86400000 })
-            return res.status(200).json({ message: 'you have been succesfully logged in' })
+            if (same) {
+            	const wToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET!, { expiresIn: '72h' })
+            	res.cookie('pollAppAuth', wToken, { maxAge: 3 * 86400000 })
+            	return res.status(200).json({ message: 'you have been succesfully logged in' })
+            } else {
+            	res.status(400).json({message: 'incorrect password'})	
+            }
           })
         } else {
           return res.status(400).json({ message: 'you are not registered' })
