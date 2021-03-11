@@ -8,6 +8,10 @@ const router: any = Router()
 router.post('/signup', async (req: Request, res: Response) => {
   const { username, password, ageGroup, region } = req.body // getting required data from body
 
+  if (!username || !password || !ageGroup || !region) {
+    return res.status(400).json({ message: 'incomplete body, required items are username, password, ageGroup and region' })
+  }
+
   const ageG = ageGroup.toLowerCase()
   if (ageG === 'children' || ageG === 'youth' || ageG === 'adult' || ageG === 'seniors') { // validating age group
     const reg = region.toLowerCase()
@@ -41,6 +45,10 @@ router.post('/signup', async (req: Request, res: Response) => {
 
 router.post('/login', async (req: Request, res: Response) => {
   const { username, password } = req.body
+
+  if (!username || !password) {
+    return res.status(400).json({ message: 'incomplete body, required fields are username and password' })
+  }
 
   try {
     await User.findOne({ username })
