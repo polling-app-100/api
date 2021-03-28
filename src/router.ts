@@ -5,6 +5,6 @@ import pollRoutes from './routes/pollRoutes'
 const router = Router()
 
 router.use('/auth', authRoutes)
-router.use('/polls', pollRoutes)
+router.use('/api', pollRoutes)
 
 export default router

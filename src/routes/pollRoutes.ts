@@ -3,22 +3,31 @@ import jwt from 'jsonwebtoken'
 import Poll from '../models/PollModel'
 
 const router : any = Router()
-
+const route : string = '/poll'
 // get all polls that have been made
-router.get('/getAllPolls', async (req: Request, res: Response) => {
+router.get(route, async (req: Request, res: Response) => {
   try {
     await Poll.find({})
-      .then((d) => {
-        return res.status(200).json(d)
+      .then((data) => {
+        return res.status(200).json(data)
       })
   } catch (e) {
-    return res.status(400).json({ error: e })
+    return res.status(400).json({ error: e.message })
   }
 })
 
 // create a poll
-router.post('/createPoll', async (req: Request, res: Response) => {
+router.post(route, async (req: Request, res: Response) => {
   const { options } = req.body // options for other users to vote on
+
+  const parsedOptions : any = []
+  options.forEach((option: any) => {
+    const title = option.title
+    parsedOptions.push({
+      title,
+      currentVotes: 0
+    })
+  })
 
   // check if user is logged in
   if (!req.cookies.pollAppAuth) {
@@ -36,7 +45,7 @@ router.post('/createPoll', async (req: Request, res: Response) => {
   // creating poll
   try {
     const newPoll = new Poll({
-      options,
+      options: parsedOptions,
       voteCount: 0,
       geoAreaCount: {
         asia: 0,
@@ -54,14 +63,14 @@ router.post('/createPoll', async (req: Request, res: Response) => {
       author: user
     })
     await newPoll.save()
-      .then((d) => res.status(200).json({ message: 'Poll Created', d }))
+      .then((data) => res.status(200).json({ message: 'Poll Created', data }))
   } catch (e) {
-    return res.status(400).json({ error: e })
+    return res.status(400).json({ error: e.message })
   }
 })
 
 // deleting polls
-router.delete('/deletePoll', async (req: Request, res: Response) => {
+router.delete(route, async (req: Request, res: Response) => {
   const { _id } = req.body // id of selected poll
 
   // check if user is logged in
@@ -88,6 +97,41 @@ router.delete('/deletePoll', async (req: Request, res: Response) => {
           return res.status(200).json({ message: 'poll deleted' })
         })
     }
+  } catch (e) {
+    return res.status(400).json({ error: e.message })
+  }
+})
+
+// editing poll options
+router.put(route, async (req: Request, res: Response) => {
+  const { _id, options } = req.body // getting poll id and new options
+  // making sure user is logged in
+  if (!req.cookies.pollAppAuth) {
+    return res.status(400).json({ error: 'please log in to edit polls' })
+  }
+
+  let user = ''
+
+  // getting user id
+  jwt.verify(req.cookies.pollAppAuth, process.env.JWT_SECRET!, (err : any, decoded : any) => {
+    if (err) { return res.status(400).json({ error: err }) }
+    user = decoded.userId
+  })
+
+  try {
+    // making sure user is author of poll
+    await Poll.findById(_id)
+      .then(async (d : any) => {
+        if (d.author !== user) {
+          return res.status(400).json({ error: 'you are not authorized to edit this poll' })
+        } else {
+          // updating the poll
+          await Poll.findByIdAndUpdate(_id, { options })
+            .then(() => {
+              return res.status(200).json({ message: 'updated poll' })
+            })
+        }
+      })
   } catch (e) {
     return res.status(400).json({ error: e.message })
   }
