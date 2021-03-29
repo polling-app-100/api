@@ -2,11 +2,9 @@
 
 ## Usage
 - Authentication 🔐
-  > - *Passwords* will be hashed and store in the DB 🔑
-  </br>
+  > - *Passwords* will be hashed and  store in the DB 🔑
   > - set *cookies* to persist user sessions and execute validation 🔒
   > - cookies stores user data that will be crucial to operate the app 🍪
-  <br />
   - login
   - logout
   - sign up
