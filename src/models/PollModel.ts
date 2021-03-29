@@ -5,12 +5,12 @@ const PollSchema = new Schema({
   // actual things for people to vote on
   options: [
     {
-      title: { type: 'String' },
-      currentVotes: { type: 'Number' }
+      title: { type: 'String', required: true },
+      currentVotes: { type: 'Number', required: true }
     }
   ],
   // total amount of votes
-  voteCount: 'String',
+  voteCount: { type: 'String', required: true },
   // user specific data for data analisis
   geoAreaCount: {
     asia: { type: 'Number' },
@@ -26,7 +26,7 @@ const PollSchema = new Schema({
     seniors: { type: 'Number' }
   },
   // author for auth and security purposes
-  author: { type: 'String' }
+  author: { type: 'String', required: true }
 })
 
 const PostModel = model('Poll', PollSchema)

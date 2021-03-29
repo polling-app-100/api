@@ -68,6 +68,7 @@ router.post('/signup', async (req: Request, res: Response) => {
   }
 })
 
+// [Dev] endpoint to get all users registered
 router.post('/login', async (req: Request, res: Response) => {
   const { username, password } = req.body
 
@@ -113,6 +114,29 @@ router.post('/logout', (req: Request, res: Response) => {
     return res.status(400).json({ message: 'succesfuly logged out' })
   } catch (e) {
     res.status(400).json({ message: e })
+  }
+})
+
+router.get('/allUsers', async (req: Request, res: Response) => {
+  try {
+    await User.find({})
+      .then((data) => {
+        return res.status(200).json(data)
+      })
+  } catch (e) {
+    return res.status(400).json(e)
+  }
+})
+
+router.delete('/deleteUser', async (req: Request, res: Response) => {
+  const { _id } = req.body
+  try {
+    await User.deleteOne({ _id })
+      .then((data) => {
+        return res.status(200).json(data)
+      })
+  } catch (e) {
+    return res.status(400).json(e)
   }
 })
 

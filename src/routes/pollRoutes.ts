@@ -1,9 +1,10 @@
 import { Router, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import Poll from '../models/PollModel'
+import User from '../models/UserModel'
 
 const router : any = Router()
-const route : string = '/poll'
+const route : string = '/'
 // get all polls that have been made
 router.get(route, async (req: Request, res: Response) => {
   try {
@@ -34,7 +35,7 @@ router.post(route, async (req: Request, res: Response) => {
     return res.status(400).json({ error: 'Please log in to create new poll' })
   }
 
-  let user = ''
+  let user : string = ''
 
   // get used Id to create poll
   jwt.verify(req.cookies.pollAppAuth, process.env.JWT_SECRET!, (err: any, decoded: any) => {
@@ -63,7 +64,13 @@ router.post(route, async (req: Request, res: Response) => {
       author: user
     })
     await newPoll.save()
-      .then((data) => res.status(200).json({ message: 'Poll Created', data }))
+      .then(async (data) => {
+        await User.findById(user)
+          .then(async (doc: any) => {
+            await User.findByIdAndUpdate(user, { pollsCreated: [data._id, ...doc.pollsCreated] })
+          })
+        return res.status(200).json({ message: 'Poll Created', data })
+      })
   } catch (e) {
     return res.status(400).json({ error: e.message })
   }
@@ -78,7 +85,7 @@ router.delete(route, async (req: Request, res: Response) => {
     return res.status(400).json({ error: 'Please login to delete polls' })
   }
 
-  let user = ''
+  let user : string = ''
 
   // getting user Id
   jwt.verify(req.cookies.pollAppAuth, process.env.JWT_SECRET!, (err : any, decoded : any) => {
@@ -88,15 +95,25 @@ router.delete(route, async (req: Request, res: Response) => {
 
   try {
     // make sure that poll belongs to request user
-    const poll: any = await Poll.findById(_id)
-    if (poll.author !== user) {
-      return res.status(400).json({ message: 'you are not authorized to delete this poll' })
-    } else if (poll.author === user) {
-      await Poll.deleteOne({ _id })
-        .then(() => {
-          return res.status(200).json({ message: 'poll deleted' })
-        })
-    }
+    await Poll.findOne({ _id })
+      .then(async (poll: any) => {
+        if (!poll) {
+          return res.status(400).json({ error: 'poll doesn\'t exist' })
+        } else if (poll.author !== user) {
+          return res.status(400).json({ error: 'you are not authorized to delete this poll' })
+        } else {
+          await User.findById(user)
+            .then(async (data : any) => {
+              const createdPolls = data.pollsCreated
+              createdPolls.splice(createdPolls.indexOf())
+              await User.updateOne({ _id: user }, { pollsCreated: createdPolls })
+            })
+          await Poll.deleteOne({ _id })
+            .then(() => {
+              return res.status(400).json({ message: 'poll deleted' })
+            })
+        }
+      })
   } catch (e) {
     return res.status(400).json({ error: e.message })
   }
@@ -110,7 +127,7 @@ router.put(route, async (req: Request, res: Response) => {
     return res.status(400).json({ error: 'please log in to edit polls' })
   }
 
-  let user = ''
+  let user : string = ''
 
   // getting user id
   jwt.verify(req.cookies.pollAppAuth, process.env.JWT_SECRET!, (err : any, decoded : any) => {
@@ -121,8 +138,10 @@ router.put(route, async (req: Request, res: Response) => {
   try {
     // making sure user is author of poll
     await Poll.findById(_id)
-      .then(async (d : any) => {
-        if (d.author !== user) {
+      .then(async (d: any) => {
+        if (!d) {
+          return res.status(400).json({ error: 'poll doesn\'t exist' })
+        } else if (d.author !== user) {
           return res.status(400).json({ error: 'you are not authorized to edit this poll' })
         } else {
           // updating the poll
@@ -134,6 +153,16 @@ router.put(route, async (req: Request, res: Response) => {
       })
   } catch (e) {
     return res.status(400).json({ error: e.message })
+  }
+})
+
+// [Dev] delete all polls
+router.delete('/all', async (req: Request, res: Response) => {
+  try {
+    await Poll.deleteMany({})
+      .then((d) => res.status(200).json(d))
+  } catch (e) {
+    return res.status(400).json(e)
   }
 })
 
