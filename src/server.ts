@@ -6,6 +6,7 @@ import cors from 'cors'
 
 async function startServer () : Promise<void> {
   const app: Application = express()
+  mongoose.set('useFindAndModify', false)
   await mongoose.connect(process.env.MONGO_URI! + '/polls-app', { useCreateIndex: true, useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
       console.log('🌿mongodb \x1b[32mconnected\n')
