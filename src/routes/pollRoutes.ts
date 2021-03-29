@@ -156,6 +156,19 @@ router.put(route, async (req: Request, res: Response) => {
   }
 })
 
+// find one specific poll
+router.get('/:_id', async (req: Request, res: Response) => {
+  const { _id } = req.params
+  try {
+    await Poll.findOne({ _id })
+      .then((poll) => {
+        return res.status(200).json(poll)
+      })
+  } catch (e) {
+    return res.status(400).json(e)
+  }
+})
+
 // [Dev] delete all polls
 router.delete('/all', async (req: Request, res: Response) => {
   try {
