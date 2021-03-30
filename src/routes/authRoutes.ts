@@ -39,7 +39,7 @@ router.post('/signup', async (req: Request, res: Response) => {
         const userExists = await User.findOne({ username }) // check if user exists or not
         if (userExists) {
           // if so, we tell them that they have already been registered
-          res.status(200).json({ message: 'you have already been registered' })
+          return res.status(200).json({ message: 'you have already been registered' })
         } else {
           // if user doesnt exist then we make a new user object
           await new User({ username, password, ageGroup, region })
@@ -96,7 +96,7 @@ router.post('/login', async (req: Request, res: Response) => {
               .status(200)
               .json({ message: 'you have been succesfully logged in' })
           } else {
-            res.status(400).json({ message: 'incorrect password' })
+            return res.status(400).json({ message: 'incorrect password' })
           }
         })
       } else {
@@ -104,16 +104,16 @@ router.post('/login', async (req: Request, res: Response) => {
       }
     })
   } catch (e) {
-    res.status(400).json({ message: e.message })
+    return res.status(400).json({ message: e.message })
   }
 })
 
 router.post('/logout', (req: Request, res: Response) => {
   try {
     res.cookie('pollAppAuth', null, { maxAge: 1 })
-    return res.status(400).json({ message: 'succesfuly logged out' })
+    return res.status(200).json({ message: 'succesfuly logged out' })
   } catch (e) {
-    res.status(400).json({ message: e })
+    return res.status(400).json({ message: e })
   }
 })
 
