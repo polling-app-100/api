@@ -22,6 +22,10 @@
   - cancle vote
   - broadcast vote and vote results to other clients
 
+## Documentation 
+
+Read the Docs [here](docs.md)
+
 ## Tech Stack 
 [![TypeScript](https://badges.frapsoft.com/typescript/love/typescript-125x28.png?v=101)](https://github.com/ellerbrock/typescript-badges/)
 
