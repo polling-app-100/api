@@ -12,7 +12,7 @@ router.post('/signup', async (req: Request, res: Response) => {
     return res
       .status(400)
       .json({
-        message:
+        error:
           'incomplete body, required items are username, password, ageGroup and region'
       })
   }
@@ -58,13 +58,13 @@ router.post('/signup', async (req: Request, res: Response) => {
         }
       } catch (e) {
         // error handling
-        return res.status(400).json({ message: e.message })
+        return res.status(400).json({ error: e.message })
       }
     } else {
-      return res.status(400).json({ message: 'invalid region' })
+      return res.status(400).json({ error: 'invalid region' })
     }
   } else {
-    return res.status(400).json({ message: 'invalid age group' })
+    return res.status(400).json({ error: 'invalid age group' })
   }
 })
 
@@ -76,7 +76,7 @@ router.post('/login', async (req: Request, res: Response) => {
     return res
       .status(400)
       .json({
-        message: 'incomplete body, required fields are username and password'
+        error: 'incomplete body, required fields are username and password'
       })
   }
 
@@ -96,15 +96,15 @@ router.post('/login', async (req: Request, res: Response) => {
               .status(200)
               .json({ message: 'you have been succesfully logged in' })
           } else {
-            return res.status(400).json({ message: 'incorrect password' })
+            return res.status(400).json({ error: 'incorrect password' })
           }
         })
       } else {
-        return res.status(400).json({ message: 'you are not registered' })
+        return res.status(400).json({ error: 'you are not registered' })
       }
     })
   } catch (e) {
-    return res.status(400).json({ message: e.message })
+    return res.status(400).json({ error: e.message })
   }
 })
 
@@ -113,7 +113,7 @@ router.post('/logout', (req: Request, res: Response) => {
     res.cookie('pollAppAuth', null, { maxAge: 1 })
     return res.status(200).json({ message: 'succesfuly logged out' })
   } catch (e) {
-    return res.status(400).json({ message: e })
+    return res.status(400).json({ error: e })
   }
 })
 
@@ -124,7 +124,7 @@ router.get('/allUsers', async (req: Request, res: Response) => {
         return res.status(200).json(data)
       })
   } catch (e) {
-    return res.status(400).json(e)
+    return res.status(400).json({ error: e })
   }
 })
 
@@ -141,7 +141,7 @@ router.delete('/deleteUser', async (req: Request, res: Response) => {
         return res.status(200).json(data)
       })
   } catch (e) {
-    return res.status(400).json(e)
+    return res.status(400).json({ error: e })
   }
 })
 
