@@ -21,7 +21,7 @@ router.post('/signup', async (req: Request, res: Response) => {
   if (
     ageG === 'children' ||
     ageG === 'youth' ||
-    ageG === 'adult' ||
+    ageG === 'adults' ||
     ageG === 'seniors'
   ) {
     // validating age group
