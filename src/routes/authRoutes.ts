@@ -50,7 +50,7 @@ router.post('/signup', async (req: Request, res: Response) => {
                 process.env.JWT_SECRET!,
                 { expiresIn: '3d' }
               )
-              res.cookie('pollAppAuth', wToken, { maxAge: 3 * 86400000 })
+              res.cookie('pollAppAuth', wToken, { maxAge: 3 * 86400000, httpOnly: true })
               return res
                 .status(200)
                 .json({ message: 'user sucessfully registered' })
@@ -91,7 +91,7 @@ router.post('/login', async (req: Request, res: Response) => {
               process.env.JWT_SECRET!,
               { expiresIn: '72h' }
             )
-            res.cookie('pollAppAuth', wToken, { maxAge: 3 * 86400000 })
+            res.cookie('pollAppAuth', wToken, { maxAge: 3 * 86400000, httpOnly: true, domain: 'localhost' })
             return res
               .status(200)
               .json({ message: 'you have been succesfully logged in' })
@@ -112,6 +112,30 @@ router.post('/logout', (req: Request, res: Response) => {
   try {
     res.cookie('pollAppAuth', null, { maxAge: 1 })
     return res.status(200).json({ message: 'succesfuly logged out' })
+  } catch (e) {
+    return res.status(400).json({ error: e })
+  }
+})
+
+router.get('/user', async (req: Request, res: Response) => {
+  if (!req.cookies.pollAppAuth) {
+    return res.status(400).json({ error: 'you are not logged in' })
+  }
+
+  let user: string = ''
+
+  jwt.verify(req.cookies.pollAppAuth!, process.env.JWT_SECRET!, (err: any, decoded: any) => {
+    if (err) {
+      return res.status(400).json({ error: err })
+    }
+    user = decoded.userId
+  })
+
+  try {
+    await User.findById(user)
+      .then((data: any) => {
+        return res.status(200).json(data)
+      })
   } catch (e) {
     return res.status(400).json({ error: e })
   }

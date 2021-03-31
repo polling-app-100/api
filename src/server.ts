@@ -12,7 +12,7 @@ async function startServer () : Promise<void> {
       console.log('🌿mongodb \x1b[32mconnected\n')
     })
 
-  app.use(cors())
+  app.use(cors({ origin: process.env.CLIENT, credentials: true }))
   app.use(express.json())
   app.use(express.urlencoded({ extended: false }))
   app.use(cookieParser(process.env.COOKIE_SECRET!))
