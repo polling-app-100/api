@@ -130,6 +130,11 @@ router.get('/allUsers', async (req: Request, res: Response) => {
 
 router.delete('/deleteUser', async (req: Request, res: Response) => {
   const { _id } = req.body
+
+  if (!_id) {
+    return res.status(400).json({ error: 'incomplete body, "_id" expected' })
+  }
+
   try {
     await User.deleteOne({ _id })
       .then((data) => {
