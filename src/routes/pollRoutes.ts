@@ -20,6 +20,10 @@ router.get(route, async (req: Request, res: Response) => {
 router.post(route, async (req: Request, res: Response) => {
   const { title, options } = req.body // options for other users to vote on
 
+  if (!title || !options) {
+    return res.status(400).json({ error: 'incomplete body, expected "title" and "options"' })
+  }
+
   const parsedOptions: any = []
   options.forEach((option: any) => {
     const title = option.title
@@ -87,6 +91,10 @@ router.post(route, async (req: Request, res: Response) => {
 router.delete(route, async (req: Request, res: Response) => {
   const { _id } = req.body // id of selected poll
 
+  if (!_id) {
+    return res.status(400).json({ error: 'incomplete body, expected "_id"' })
+  }
+
   // check if user is logged in
   if (!req.cookies.pollAppAuth) {
     return res.status(400).json({ error: 'Please login to delete polls' })
@@ -134,6 +142,11 @@ router.delete(route, async (req: Request, res: Response) => {
 // editing poll options
 router.put(route, async (req: Request, res: Response) => {
   const { _id, title, options } = req.body // getting poll id and new options
+
+  if (!_id || !title || !options) {
+    return res.status(400).json({ error: 'incomplete body, expected "_id", "title" and "options"' })
+  }
+
   // making sure user is logged in
   if (!req.cookies.pollAppAuth) {
     return res.status(400).json({ error: 'please log in to edit polls' })
