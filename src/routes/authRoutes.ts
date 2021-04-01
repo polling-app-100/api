@@ -141,6 +141,52 @@ router.get('/user', async (req: Request, res: Response) => {
   }
 })
 
+router.put('/user', async (req: Request, res: Response) => {
+  const { username, region, ageGroup } = req.body
+
+  if (!username || !region || !ageGroup) {
+    return res.status(400).json({ error: 'invalid body, expected "username", "region" and "ageGroup"' })
+  }
+
+  if (!req.cookies.pollAppAuth) {
+    return res.status(400).json({ error: 'you are not logged in' })
+  }
+
+  let user: string = ''
+
+  // getting user id
+  jwt.verify(
+    req.cookies.pollAppAuth,
+    process.env.JWT_SECRET!,
+    (err: any, decoded: any) => {
+      if (err) {
+        return res.status(400).json({ error: err })
+      }
+      user = decoded.userId
+    }
+  )
+
+  try {
+    await User.findById(user)
+      .then(async (d) => {
+        if (!d) {
+          return res.status(400).json({ error: "user doesn't exist" })
+        } else if (d._id.toString() !== user) {
+          return res
+            .status(400)
+            .json({ error: 'you are not authorized to edit this user' })
+        } else {
+          // updating the user
+          await User.findByIdAndUpdate(user, { username, region, ageGroup }).then(() => {
+            return res.status(200).json({ message: 'updated user' })
+          })
+        }
+      })
+  } catch (e) {
+    return res.status(400).json({ error: e })
+  }
+})
+
 router.get('/allUsers', async (req: Request, res: Response) => {
   try {
     await User.find({})
