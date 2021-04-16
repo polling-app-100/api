@@ -199,16 +199,35 @@ router.get('/allUsers', async (req: Request, res: Response) => {
 })
 
 router.delete('/deleteUser', async (req: Request, res: Response) => {
-  const { _id } = req.body
-
-  if (!_id) {
-    return res.status(400).json({ error: 'incomplete body, "_id" expected' })
+  if (!req.cookies.pollAppAuth) {
+    return res.status(400).json({ error: 'you are not logged in' })
   }
 
+  let user: string = ''
+
+  // getting user id
+  jwt.verify(
+    req.cookies.pollAppAuth,
+    process.env.JWT_SECRET!,
+    (err: any, decoded: any) => {
+      if (err) {
+        return res.status(400).json({ error: err })
+      }
+      user = decoded.userId
+    }
+  )
+
   try {
-    await User.deleteOne({ _id })
-      .then((data) => {
-        return res.status(200).json(data)
+    await User.findOne({ _id: user })
+      .then(async (data) => {
+        if (data) {
+          await User.deleteOne({ _id: user })
+            .then((data) => {
+              return res.status(200).json({ message: 'user sucessfullly deleted' })
+            })
+        } else {
+          return res.status(400).json({ error: 'user not found' })
+        }
       })
   } catch (e) {
     return res.status(400).json({ error: e })
