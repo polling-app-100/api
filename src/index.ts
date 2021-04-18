@@ -1,8 +1,8 @@
-import startServer from './server'
+import server from './server'
 import clustering from './cluster/cluster'
 
 if (process.env.NODE_ENV === 'development') {
-  startServer()
+  server.startServer()
 } else {
-  clustering(async () => await startServer())
+  clustering(async () => await server.startServer())
 }
