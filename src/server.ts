@@ -4,8 +4,9 @@ import router from './router'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
 
+const app : Application = express()
+
 async function startServer () : Promise<void> {
-  const app: Application = express()
   mongoose.set('useFindAndModify', false)
   await mongoose.connect(process.env.MONGO_URI! + '/polls-app', { useCreateIndex: true, useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
@@ -23,4 +24,4 @@ async function startServer () : Promise<void> {
   })
 }
 
-export default startServer
+export default { app, startServer }
