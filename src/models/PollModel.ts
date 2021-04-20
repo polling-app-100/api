@@ -11,7 +11,7 @@ const PollSchema = new Schema({
     }
   ],
   // total amount of votes
-  voteCount: { type: String, required: true },
+  voteCount: { type: Number, required: true },
   // user specific data for data analisis
   geoAreaCount: {
     asia: { type: Number },
@@ -20,7 +20,7 @@ const PollSchema = new Schema({
     northAmerica: { type: Number },
     southAmerica: { type: Number }
   },
-  AgeGroup: {
+  ageGroup: {
     children: { type: Number },
     youth: { type: Number },
     adults: { type: Number },
