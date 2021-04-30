@@ -1,4 +1,5 @@
 import { Response, Request } from 'express'
+import type { UserI } from '../interfaces'
 import User from '../models/UserModel'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
@@ -42,7 +43,7 @@ async function signUpController (req: Request, res: Response) {
           // if user doesnt exist then we make a new user object
           await new User({ username, password, ageGroup, region })
             .save()
-            .then((data) => {
+            .then((data : any) => {
               const wToken = jwt.sign(
                 { userId: data._id },
                 process.env.JWT_SECRET!,
@@ -139,7 +140,9 @@ async function getUserController (req: Request, res: Response) {
 
   try {
     await User.findById(user).then((data: any) => {
-      return res.status(200).json(data)
+      const user: UserI = data
+      delete user.password
+      return res.status(200).json(user)
     })
   } catch (e) {
     return res.status(400).json({ error: e })
@@ -239,6 +242,20 @@ async function devAllUsers (req: Request, res: Response) {
   }
 }
 
+async function getAuthor (req: Request, res: Response) {
+  const { _id } = req.params
+
+  try {
+    await User.findById(_id)
+      .then((data: any) => {
+        const user = data
+        res.status(200).json({ author: user.username })
+      })
+  } catch (e) {
+    res.status(400).json({ error: e.message })
+  }
+}
+
 export default {
   signUpController,
   loginController,
@@ -246,5 +263,6 @@ export default {
   getUserController,
   updateUserController,
   deleteUser,
-  devAllUsers
+  devAllUsers,
+  getAuthor
 }

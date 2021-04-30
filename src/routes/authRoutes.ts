@@ -21,6 +21,9 @@ router.put('/user', controllers.updateUserController)
 // delete user route
 router.delete('/deleteUser', controllers.deleteUser)
 
+// get author route
+router.get('/author/:_id', controllers.getAuthor)
+
 // [dev] get all users route
 router.get('/allUsers', controllers.devAllUsers)
 
