@@ -21,7 +21,13 @@ router.put('/user', controllers.updateUserController)
 // delete user route
 router.delete('/deleteUser', controllers.deleteUser)
 
+// get author route
+router.post('/author', controllers.getAuthor)
+
 // [dev] get all users route
 router.get('/allUsers', controllers.devAllUsers)
+
+// [dev] delete all users rote
+router.get('/clear', controllers.clear)
 
 export default router

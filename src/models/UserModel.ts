@@ -7,7 +7,10 @@ const userSchema = new Schema({
   ageGroup: { type: String }, // children 0-14 , youth 15-24, adults 25-29, seniors 65....,
   region: { type: String }, // NorthAmerica, SouthAmerica, Europe, Africa, Asia, Oceania
   pollsCreated: [String],
-  votedIn: [String]
+  votedIn: [{
+    pollId: { type: String },
+    optionId: { type: String }
+  }]
 })
 
 userSchema.pre('save', function (this: any, next: any) {
