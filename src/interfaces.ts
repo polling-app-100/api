@@ -1,11 +1,14 @@
+import { Document } from 'mongoose'
+
 // polls
 interface Options {
-    _id: string,
+    _id: number,
     title: string,
     currentVotes: number
 }
 
 interface GeoAreaCount{
+    [index: string]: number
     asia: number
     oceania: number
     europe: number
@@ -14,33 +17,47 @@ interface GeoAreaCount{
 }
 
 interface AgeGroup {
+    [index: string]: number
     children: number
     youth: number
     adults: number
     seniors: number
 }
 
-export interface PollI {
+export interface PollI extends Document {
     author: string
     title: string
     createdAt: string
     voteCount: number,
     _id: string,
-    __v: string,
     options: Array<Options>,
-    ageGroup: Array<AgeGroup>
-    geoAreaCount: Array<GeoAreaCount>
+    ageGroup: AgeGroup
+    geoAreaCount: GeoAreaCount
     error?: string
 }
 
 // users
-export interface UserI {
+export interface VotedIn {
+    _id?: String
+    pollId: string
+    optionId: string
+}
+
+export interface UserI extends Document {
     username: string
     password?: string
     _id: string
     ageGroup: string
     region: string
-    votedIn: Array<string>
+    votedIn: Array<VotedIn>
     createdPolls: Array<string>
     error?: string
+}
+
+export interface Message {
+    pollId: string
+    voterId: string
+    option: string
+    ageGroup: string
+    geoArea: string
 }

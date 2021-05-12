@@ -41,9 +41,9 @@ async function signUpController (req: Request, res: Response) {
             .json({ message: 'you have already been registered' })
         } else {
           // if user doesnt exist then we make a new user object
-          await new User({ username, password, ageGroup, region })
+          await new User({ username, password, ageGroup, region, votedIn: [] })
             .save()
-            .then((data : any) => {
+            .then((data: any) => {
               const wToken = jwt.sign(
                 { userId: data._id },
                 process.env.JWT_SECRET!,
@@ -141,8 +141,15 @@ async function getUserController (req: Request, res: Response) {
   try {
     await User.findById(user).then((data: any) => {
       const user: UserI = data
-      delete user.password
-      return res.status(200).json(user)
+      const body: any = {
+        _id: user._id,
+        username: user.username,
+        createdPolls: user.createdPolls,
+        region: user.region,
+        votedIn: user.votedIn,
+        ageGroup: user.ageGroup
+      }
+      return res.status(200).json(body)
     })
   } catch (e) {
     return res.status(400).json({ error: e })
@@ -243,16 +250,24 @@ async function devAllUsers (req: Request, res: Response) {
 }
 
 async function getAuthor (req: Request, res: Response) {
-  const { _id } = req.params
+  const { _id } = req.body
 
   try {
-    await User.findById(_id)
-      .then((data: any) => {
-        const user = data
-        res.status(200).json({ author: user.username })
-      })
+    await User.findById(_id).then((data: any) => {
+      const user = data
+      res.status(200).json({ author: user.username })
+    })
   } catch (e) {
     res.status(400).json({ error: e.message })
+  }
+}
+
+async function clear (req: Request, res: Response) {
+  try {
+    await User.deleteMany({})
+      .then(() => { res.status(200).json({ message: 'success' }) })
+  } catch (e) {
+    res.status(400).json(e)
   }
 }
 
@@ -264,5 +279,6 @@ export default {
   updateUserController,
   deleteUser,
   devAllUsers,
-  getAuthor
+  getAuthor,
+  clear
 }

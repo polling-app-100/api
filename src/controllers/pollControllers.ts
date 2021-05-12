@@ -63,7 +63,7 @@ async function createPollController (req: Request, res: Response) {
         northAmerica: 0,
         southAmerica: 0
       },
-      AgeGroup: {
+      ageGroup: {
         children: 0,
         youth: 0,
         adults: 0,
