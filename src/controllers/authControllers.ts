@@ -71,43 +71,71 @@ async function signUpController (req: Request, res: Response) {
 }
 
 async function loginController (req: Request, res: Response) {
-  const { username, password } = req.body
+  if (req.cookies.pollAppAuth) {
+    jwt.verify(
+      req.cookies.pollAppAuth!,
+      process.env.JWT_SECRET!,
+      (err: any, decoded: any) => {
+        if (err) {
+          return res.status(400).json({ error: err })
+        }
 
-  if (!username || !password) {
-    return res.status(400).json({
-      error: 'incomplete body, required fields are username and password'
-    })
+        const wToken = jwt.sign(
+          { userId: decoded.userId },
+          process.env.JWT_SECRET!,
+          { expiresIn: '72h' }
+        )
+        res.cookie('pollAppAuth', wToken, {
+          maxAge: 3 * 86400000,
+          httpOnly: true,
+          domain: 'localhost'
+        })
+        return res
+          .status(200)
+          .json({ message: 'you have been succesfully logged in' })
+      }
+    )
   }
 
-  try {
-    await User.findOne({ username }).then((user: any) => {
-      if (user) {
-        bcrypt.compare(password, user.password, (err: any, same: Boolean) => {
-          if (err) return res.json({ message: err })
-          if (same) {
-            const wToken = jwt.sign(
-              { userId: user._id },
+  if (!req.cookies.pollAppAuth) {
+    const { username, password } = req.body
+
+    if (!username || !password) {
+      return res.status(400).json({
+        error: 'incomplete body, required fields are username and password'
+      })
+    }
+
+    try {
+      await User.findOne({ username }).then((user: any) => {
+        if (user) {
+          bcrypt.compare(password, user.password, (err: any, same: Boolean) => {
+            if (err) return res.json({ message: err })
+            if (same) {
+              const wToken = jwt.sign(
+                { userId: user._id },
               process.env.JWT_SECRET!,
               { expiresIn: '72h' }
-            )
-            res.cookie('pollAppAuth', wToken, {
-              maxAge: 3 * 86400000,
-              httpOnly: true,
-              domain: 'localhost'
-            })
-            return res
-              .status(200)
-              .json({ message: 'you have been succesfully logged in' })
-          } else {
-            return res.status(400).json({ error: 'incorrect password' })
-          }
-        })
-      } else {
-        return res.status(400).json({ error: 'you are not registered' })
-      }
-    })
-  } catch (e) {
-    return res.status(400).json({ error: e.message })
+              )
+              res.cookie('pollAppAuth', wToken, {
+                maxAge: 3 * 86400000,
+                httpOnly: true,
+                domain: 'localhost'
+              })
+              return res
+                .status(200)
+                .json({ message: 'you have been succesfully logged in' })
+            } else {
+              return res.status(400).json({ error: 'incorrect password' })
+            }
+          })
+        } else {
+          return res.status(400).json({ error: 'you are not registered' })
+        }
+      })
+    } catch (e) {
+      return res.status(400).json({ error: e.message })
+    }
   }
 }
 
