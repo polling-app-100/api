@@ -27,6 +27,13 @@ if (process.env.NODE_ENV === 'development') {
 } else {
   setupMongoose()
   const wsServer = createServer(server)
+
+  const io: any = new Server(wsServer, {
+    cors: { origin: process.env.CLIENT! }
+  })
+
+  io.on('connection', conn)
+
   clustering(() => { wsServer.listen(process.env.PORT || 5005) })
   console.log('🚀 server starting at http://localhost:' + (process.env.PORT || 5005))
 }
