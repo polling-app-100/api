@@ -196,7 +196,7 @@ async function findPollController (req: Request, res: Response) {
   }
 }
 
-async function devDeleteAllUser (req: Request, res: Response) {
+async function devDeleteAllPolls (req: Request, res: Response) {
   try {
     await Poll.deleteMany({}).then((d) => res.status(200).json(d))
   } catch (e) {
@@ -210,5 +210,5 @@ export default {
   editPollController,
   deletePollController,
   findPollController,
-  devDeleteAllUser
+  devDeleteAllPolls
 }

@@ -20,6 +20,6 @@ router.put(route, controller.editPollController)
 router.get('/:_id', controller.findPollController)
 
 // [Dev] delete all polls
-router.delete('/all', controller.devDeleteAllUser)
+router.delete('/all', controller.devDeleteAllPolls)
 
 export default router
