@@ -2,6 +2,8 @@ import express, { Application } from 'express'
 import router from './router'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
+import dotenv from 'dotenv'
+dotenv.config()
 const app : Application = express()
 
 app.use(cors({ origin: process.env.CLIENT, credentials: true }))
