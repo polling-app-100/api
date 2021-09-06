@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 import Poll from '../models/PollModel'
 import User from '../models/UserModel'
 
-async function getAllPollsController (req: Request, res: Response) {
+async function getAllPollsController (_: Request, res: Response) {
   try {
     await Poll.find({}).then((data) => {
       return res.status(200).json(data)
@@ -196,7 +196,7 @@ async function findPollController (req: Request, res: Response) {
   }
 }
 
-async function devDeleteAllPolls (req: Request, res: Response) {
+async function devDeleteAllPolls (_: Request, res: Response) {
   try {
     await Poll.deleteMany({}).then((d) => res.status(200).json(d))
   } catch (e) {

@@ -139,7 +139,7 @@ async function loginController (req: Request, res: Response) {
   }
 }
 
-async function logoutController (req: Request, res: Response) {
+async function logoutController (_: Request, res: Response) {
   try {
     res.cookie('pollAppAuth', null, { maxAge: 1 })
     return res.status(200).json({ message: 'succesfuly logged out' })
@@ -255,7 +255,7 @@ async function deleteUser (req: Request, res: Response) {
   try {
     await User.findOne({ _id: user }).then(async (data) => {
       if (data) {
-        await User.deleteOne({ _id: user }).then((data) => {
+        await User.deleteOne({ _id: user }).then((_) => {
           return res.status(200).json({ message: 'user sucessfullly deleted' })
         })
       } else {
@@ -267,7 +267,7 @@ async function deleteUser (req: Request, res: Response) {
   }
 }
 
-async function devAllUsers (req: Request, res: Response) {
+async function devAllUsers (_: Request, res: Response) {
   try {
     await User.find({}).then((data) => {
       return res.status(200).json(data)
@@ -290,7 +290,7 @@ async function getAuthor (req: Request, res: Response) {
   }
 }
 
-async function clear (req: Request, res: Response) {
+async function clear (_: Request, res: Response) {
   try {
     await User.deleteMany({})
       .then(() => { res.status(200).json({ message: 'success' }) })
