@@ -7,8 +7,9 @@ import { conn } from './ws'
 
 function setupMongoose () : void {
   mongoose.set('useFindAndModify', false)
-  mongoose.connect(process.env.MONGO_URI! + '/polls-app', { useCreateIndex: true, useNewUrlParser: true, useUnifiedTopology: true }, () => {
-    console.log('🌿mongodb \x1b[32mconnected\n')
+  mongoose.connect(process.env.MONGO_URI!, { useNewUrlParser: true, useUnifiedTopology: true }, (err) => {
+    if (err) { console.log(err) }
+    else { console.log('🌿mongodb \x1b[32mconnected\n') } 
   })
 }
 

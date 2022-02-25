@@ -6,7 +6,10 @@ const userSchema = new Schema({
   password: { required: true, minLength: 6, type: String, trim: true },
   ageGroup: { type: String }, // children 0-14 , youth 15-24, adults 25-29, seniors 65....,
   region: { type: String }, // NorthAmerica, SouthAmerica, Europe, Africa, Asia, Oceania
-  pollsCreated: [String],
+  pollsCreated: [{
+    pollId: { type: String },
+    pollTitle: { type: String }
+  }],
   votedIn: [{
     pollId: { type: String },
     optionId: { type: String }

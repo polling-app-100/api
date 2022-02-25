@@ -75,7 +75,7 @@ async function createPollController (req: Request, res: Response) {
     await newPoll.save().then(async (data) => {
       await User.findById(user).then(async (doc: any) => {
         await User.findByIdAndUpdate(user, {
-          pollsCreated: [data._id, ...doc.pollsCreated]
+          pollsCreated: [{ pollId: data.id, pollTitle: title }, ...doc.pollsCreated]
         })
       })
       return res.status(200).json({ message: 'Poll Created', data })
@@ -172,7 +172,7 @@ async function deletePollController (req: Request, res: Response) {
       } else {
         await User.findById(user).then(async (data: any) => {
           const createdPolls = data.pollsCreated
-          createdPolls.splice(createdPolls.indexOf())
+          createdPolls.splice(createdPolls.indexOf(createdPolls))
           await User.updateOne({ _id: user }, { pollsCreated: createdPolls })
         })
         await Poll.deleteOne({ _id }).then(() => {

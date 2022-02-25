@@ -41,7 +41,7 @@ async function signUpController (req: Request, res: Response) {
             .json({ message: 'you have already been registered' })
         } else {
           // if user doesnt exist then we make a new user object
-          await new User({ username, password, ageGroup, region, votedIn: [] })
+          await new User({ username, password, ageGroup, region, votedIn: [], pollsCreated: [] })
             .save()
             .then((data: any) => {
               const wToken = jwt.sign(
@@ -172,7 +172,7 @@ async function getUserController (req: Request, res: Response) {
       const body: any = {
         _id: user._id,
         username: user.username,
-        createdPolls: user.createdPolls,
+        createdPolls: user.pollsCreated,
         region: user.region,
         votedIn: user.votedIn,
         ageGroup: user.ageGroup

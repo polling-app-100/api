@@ -50,7 +50,7 @@ export interface UserI extends Document {
     ageGroup: string
     region: string
     votedIn: Array<VotedIn>
-    createdPolls: Array<string>
+    pollsCreated: Array<string>
     error?: string
 }
 
